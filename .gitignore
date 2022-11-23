@@ -1,0 +1,6 @@
+*.txt
+results/
+logs
+dataset
+*.png
+checkpoints/
