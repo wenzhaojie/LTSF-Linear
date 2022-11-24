@@ -1,6 +1,6 @@
 # models 都需继承以下方法
 import sys
-sys.path.append("..")
+sys.path.insert(0, "../..")
 
 import numpy as np
 from sklearn.preprocessing import StandardScaler

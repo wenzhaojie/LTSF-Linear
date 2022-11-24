@@ -1,4 +1,6 @@
 # 基于 transformers 的预测方法
+import sys
+sys.path.insert(0, "../..")
 from basic import Basic_model
 from sklearn.preprocessing import StandardScaler, MinMaxScaler
 from argparse import Namespace
