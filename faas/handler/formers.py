@@ -26,7 +26,7 @@ class Formers_model(Basic_model):
         super().__init__(name, scaler)
         self.name = name
         self.scaler = scaler
-        print(f"初始化 Formers_model!")
+        print(f"初始化{self.name}!")
         pass
 
     def _acquire_device(self):
@@ -487,7 +487,7 @@ if __name__ == "__main__":
     test_data = [i for i in range(0,10)] * 500
     print(f"test_data:{test_data}")
 
-    my_model = Formers_model(name="Autoformer")
+    my_model = Formers_model(name="Transformer")
     my_model.train(
         history=test_data,
         extra_parameters={
