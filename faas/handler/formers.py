@@ -484,14 +484,14 @@ class Formers_model(Basic_model):
 
 
 if __name__ == "__main__":
-    test_data = [i for i in range(0,100)] * 5
+    test_data = [i for i in range(0,10)] * 500
     print(f"test_data:{test_data}")
 
-    my_model = Formers_model(name="NLinear")
+    my_model = Formers_model(name="Autoformer")
     my_model.train(
         history=test_data,
         extra_parameters={
-            "seq_len": 100,
+            "seq_len": 200,
             "pred_len": 10
         }
     )
