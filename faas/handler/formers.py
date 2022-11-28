@@ -23,14 +23,11 @@ import matplotlib.pyplot as plt
 
 class Formers_model(Basic_model):
     def __init__(self, name="DLinear", scaler=StandardScaler()):
-        
         super().__init__(name, scaler)
         self.name = name
         self.scaler = scaler
-        print(f"初始化Formers_model!")
-        
+        print(f"初始化 Formers_model!")
         pass
-
 
     def _acquire_device(self):
         if self.args.use_gpu:
@@ -42,8 +39,13 @@ class Formers_model(Basic_model):
                 device = torch.device('cuda:{}'.format(self.args.gpu))
                 print('Use GPU: cuda:{}'.format(self.args.gpu))
             else:
-                device = torch.device('cpu')
-                print('Use CPU')
+                # 判断是否MPS可用
+                try:
+                    device = torch.device("mps")
+                    print('Use Apple GPU')
+                except:
+                    device = torch.device('cpu')
+                    print('Use CPU')
         else:
             device = torch.device('cpu')
             print('Use CPU')
@@ -52,11 +54,9 @@ class Formers_model(Basic_model):
 
     def _build_args(self, extra_parameters):
         # 先获取模型超参数
-        try:
-            seq_len = extra_parameters["seq_len"]
-            pred_len = extra_parameters["pred_len"]
-        except Exception as e:
-            print(f"需要指定 extra_parameters: seq_len 和 pred_len")
+
+        seq_len = extra_parameters["seq_len"]
+        pred_len = extra_parameters["pred_len"]
 
         args = Namespace(
             activation='gelu', 
@@ -79,11 +79,11 @@ class Formers_model(Basic_model):
             factor=3, 
             features='S', 
             freq='h', 
-            gpu=0, 
+            gpu=0,
             individual=False, 
             is_training=1, 
             itr=1, 
-            label_len=int(0.5*seq_len),
+            label_len=48,
             learning_rate=0.0001, 
             loss='mse', 
             lradj='type1', 
@@ -234,6 +234,8 @@ class Formers_model(Basic_model):
 
         if self.args.use_amp:
             scaler = torch.cuda.amp.GradScaler()
+        else:
+            scaler = None
 
         for epoch in range(self.args.train_epochs):
             iter_count = 0
@@ -323,7 +325,7 @@ class Formers_model(Basic_model):
 
 
     def test(self, setting, test=0):
-        test_data, test_loader = self._get_data(flag='test')
+        test_data, test_loader = self._get_data(flag='test', numpy_data=None)
         
         if test:
             print('loading model')
@@ -473,7 +475,8 @@ class Formers_model(Basic_model):
         # print(f"predict reverse_pred_list:{reverse_pred_list}")
         # print(f"shape of reverse_pred_list: {reverse_pred_list.shape}")
 
-        predict_result = reverse_pred_list.tolist()
+        predict_result = reverse_pred_list.tolist()[0:predict_window]
+
         assert predict_window == len(predict_result)
 
         return predict_result
@@ -495,7 +498,7 @@ if __name__ == "__main__":
 
     res = my_model.predict(
         history=test_data,
-        predict_window=1,
+        predict_window=10,
     )
     print(f"res:{res}")
 
